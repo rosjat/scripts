@@ -1,6 +1,6 @@
 ﻿# Script:  backup_restore_db.ps1
 # Author:  Markus Rosjat <markus.rosjat@gmail.com>
-# Version: 1.0
+# Version: 1.1
 # Date:    2016-10-06
 
 <#
@@ -57,7 +57,6 @@ param(
     [Parameter(Mandatory=$false, 
                ValueFromPipeline=$true,
                ValueFromPipelineByPropertyName=$true)] 
-    [ValidateScript({Test-Path $_ -PathType 'Container'})]
     [string]$RestoreFile,
 
 
@@ -92,7 +91,11 @@ try
         $RFile = "$BackupLocation\$RestoreFile"
         if(Test-Path $RFile)
         {
-            Restore-SqlDatabase -ServerInstance $SQLServer\$Instance `                                -Database $Database `                                -BackupFile $RFile `                                -ReplaceDatabase `                                -Verbose  4>&1 | #Attention!!! we redirect the verbose stream to stdout
+            Restore-SqlDatabase -ServerInstance $SQLServer\$Instance `
+                                -Database $Database `
+                                -BackupFile $RFile `
+                                -ReplaceDatabase `
+                                -Verbose  4>&1 | #Attention!!! we redirect the verbose stream to stdout
             Write-Output -OutVariable out |
             Out-File $LogFile -InputObject($out) -Append -Force
         }
