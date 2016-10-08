@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# Script:  spam
+# Author:  Markus Rosjat <markus.rosjat@gmail.com>
+# Version: 1.0
+# Date:    2015-11-11
+#
+# Synopsis:
+#  script to check the OpenBSD spamdb for whitelisted spammer ips, remove and
+#  blacklist them. 
+#
+# Parameter: $ip_prange
+#  ip address or part of an ip address to indicate a range.
+#
+# Description: 
+#   Basically use it with a  ip but you can also use a ip range. Be careful with 
+#   a range since we just look for white listed hosts. This could blacklist even 
+#   valid mx entries !!! But with a single ip you should be fine and the text file 
+#   shouldn't get double ip address entries. If you only provide a partial ip address 
+#   it might be a good idea to query spamdb first to see the possible outcome.
+#
+# Note:
+#   This script needs to be run with higher privileges so make sure you use sudo
+#   or doas.
+#
+# Example:
+#  $ sudo ./spam 1.2.3.4 
+#
+#  this will check if 1.2.3.4 is whitelisted, remove it from the whitelist and write
+#  the ip in the blacklist file
+#
+# Example:
+#  $ sudo ./spam 1.2.3.
+#
+#  this will check if any ip that contains 1.2.3. is whitelisted, remove it from the whitelist and write
+#  the ip in the blacklist file. This would be any ip from 1.2.3.1 to 1.2.3.254. See the Description for 
+#  possible pitfalls!
+
+
+
+ip_range=$1
+spammer=`spamdb | grep $ip_range | grep WHITE | awk -F "|" '{print $2}'`
+blacklist=/etc/mail/blacksheep.txt
+
+for ip in $spammer;
+do
+  echo $ip
+  /usr/sbin/spamdb -d $ip
+  /usr/sbin/spamdb -a -t $ip
+  echo $entry >> $blacklist
+done
+
+# we need to reload the spamd settings to let our changes take effect
+/usr/libexec/spamd-setup
