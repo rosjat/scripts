@@ -102,6 +102,7 @@ try
         else
         {
             Write-Output "$RFile doesn't exist!"
+            Out-File $LogFile -InputObject("[error] $Today`: $RFile doesn't exist!") -Append -Force
         }
     }
     
@@ -109,5 +110,6 @@ try
 catch 
 {
     $ErrorMessage = $_.Exception.Message
-    Write-Output $ErrorMessage
+    # since we get an eventlog to we simply plug an entry in the logfile, just be creative ;-)
+    Out-File $LogFile -InputObject("[error] $Today`: $ErrorMessage") -Append -Force
 }
