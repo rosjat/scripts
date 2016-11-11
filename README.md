@@ -11,6 +11,7 @@ Content
  * Powershell
     * backup_and_restore_db.ps1 - script to backup or restore a MSSQL Server Database
     * check_service.ps1 - script to check if a service is running 
+    * hp_cim.ps1 - script to get informations about HP CIM classes provided by HP WEBM Providers
  * T-SQL
     * RECONNECT_ORPHANED_USERS.sql - reconnect MSSQL Server logins with a given Database
  * Shell
