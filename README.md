@@ -17,4 +17,6 @@ Content
  * Shell
     * OpenBSD
        * spam - script to blacklist spammer ips
+       * check_spamd - a helper to get notification if spamd is running. For some reason on 6.1 
+                       the process just dies randomly after a few weeks of running
 
