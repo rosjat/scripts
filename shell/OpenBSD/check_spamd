@@ -1,0 +1,22 @@
+#!/usr/local/bin/python
+# coding: utf-8
+# Copyright (C) 2017  Markus, Rosjat
+
+import sys, os, commands, datetime
+
+grep_template = 'ps -ax | grep spamd'
+mail_template = 'echo "check spamd!" | mail -s "`/bin/hostname` spamd notification" -r \
+                 %s root' % 'your_email'
+def check_spamd():
+    '''
+    This function simply checks if there is a spamd process running.
+    If no spamd process is running it sends an email to the log email.
+    '''
+    cmd_output = commands.getoutput(grep_template).split('\n')
+    # ps -ax will at least create 3 entries in cmd_output! and only then
+    # we are going to send a mail becuae it means spamd isn't running!
+    if(len(cmd_output) == 3):
+        commands.getoutput(mail_template)
+
+if __name__ == "__main__":
+    check_spamd()
