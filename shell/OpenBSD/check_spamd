@@ -1,12 +1,18 @@
 #!/usr/local/bin/python
 # coding: utf-8
 # Copyright (C) 2017  Markus, Rosjat
+#
+# this script is OpenBSD specific so don't except it to run on
+# other systems without replacing the proper commands in the 
+# templates
 
 import sys, os, commands, datetime
 
 grep_template = 'ps -ax | grep spamd'
-mail_template = 'echo "check spamd!" | mail -s "`/bin/hostname` spamd notification" -r \
-                 %s root' % 'your_email'
+mail_template = 'echo "trying to restart spamd ...\n%s" \
+                 | mail -s "`/bin/hostname` spamd notification" -r %s root'
+rcctl_template = 'rcctl start spamd'
+
 def check_spamd():
     '''
     This function simply checks if there is a spamd process running.
@@ -14,9 +20,10 @@ def check_spamd():
     '''
     cmd_output = commands.getoutput(grep_template).split('\n')
     # ps -ax will at least create 3 entries in cmd_output! and only then
-    # we are going to send a mail becuae it means spamd isn't running!
+    # we are going to send a mail because it means spamd isn't running!
     if(len(cmd_output) == 3):
-        commands.getoutput(mail_template)
+        rcctl_result = commands.getoutput(rcctl_template)
+        commands.getoutput(mail_template % (rcctl_result, 'your_emailadress@your_domain.tld'))
 
 if __name__ == "__main__":
     check_spamd()
