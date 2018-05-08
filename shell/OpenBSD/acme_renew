@@ -1,0 +1,116 @@
+#!/usr/local/bin/python
+# coding: utf-8
+# Copyright (C) 2018 Markus, Rosjat
+#
+# Script to use the openBSD acme-client tool to renew
+# let's encrypt certificates for a number of domains.
+# It also does a backup of existing certificates and.
+# restarts the openBSD httpd daemon if all certifcates
+# got successfully renewed. To notify an administrative
+# person it also sends an email with information about
+# success or failure information.
+
+import os
+import sys
+import subprocess
+import smtplib
+import shutil
+import glob
+import itertools
+from email.mime.text import MIMEText
+
+
+RCCTL_STOP = 'stop'
+RCCTL_START = 'start'
+RCCTL_RESTART = 'restart'
+RCCTL_RELOAD = 'reload'
+
+ACME_CLIENT_VERBOSE = '-vv'
+
+acme_returncodes = {0: 'ACME_CLIENT_SUCCESS',
+                    1: 'ACME_CLIENT_FAILURE',
+                    2: 'ACME_CLIENT_NOCHANGES', }
+
+rcctl_cmd_template = '/usr/sbin/rcctl'
+acme_client_cmd_template = '/usr/sbin/acme-client'
+mail_cmd_template = '/usr/bin/mail'
+
+cert_path = '/etc/ssl/web/'
+cert_backup_path = '/etc/ssl/web/backup/'
+
+# if you need to add more domains do it by adding them to this list!
+domains = ['mydomain.tld',
+           'myotherdomain.tld',
+           'mythirddomain.tld', ]
+
+def _backup_cert():
+    """
+    do a simply copy to backup existing certificates. It will look
+    for *.crt and *.pem files.
+    """
+    os.mkdir(cert_backup_path, 0600)
+    [shutil.copy2(cert, cert_backup_path) \
+                  for cert in list(itertools.chain(*[glob.glob(cert_file) \
+                                   for cert_file in ['%s*.crt' % cert_path ,'%s*.pem' % cert_path]]))]
+
+
+def _delete_backup():
+    """
+    delete an existing backpu
+    """
+    shutil.rmtree(cert_backup_path, ignore_errors=True)
+
+
+def _sendmail(_from, _to,_subject,  _msg):
+    """
+    send a notification to someone who can take care of stuff.
+    It asumes you got a local smtpd configured, up and running!
+    """
+    m = MIMEText(_msg.encode('utf-8'),'plain','utf-8')
+    m['subject'] = _subject
+    m['from'] = _from
+    m['To'] = _to
+
+    s = smtplib.SMTP('localhost')
+    s.sendmail(_from,_to, m.as_string())
+    s.quit()
+
+
+def _acme_renew(domains):
+    """
+    try to renew a let's encrypt certificate with acme-client tool
+    """
+    error = {}
+    success = {}
+    for domain in domains:
+        try:
+            subprocess.check_output([acme_client_cmd_template, ACME_CLIENT_VERBOSE, domain],
+                                stderr=subprocess.STDOUT,
+                                shell=False)
+            success.update({domain: acme_returncodes[0], })
+        except subprocess.CalledProcessError as e:
+            error.update({domain: acme_returncodes[e.returncode], })
+    return success, error
+
+
+if __name__ == "__main__":
+    if os.path.exists(cert_backup_path):
+        _delete_backup()
+    _backup_cert()
+    success, error = _acme_renew(domains)
+    message = ''
+    if success:
+        message = 'The following domains got a new certificate\n------------------------------------------\n\n'
+        for key in success.keys():
+            message += '%s\n' % key
+    if error:
+        message += '\nThe following domains could not get  a new certificate\n------------------------------------------\n\n'
+        for key in error.keys():
+            message += '%s\t->\t%s\n' % (key,error[key])
+        message += '\n\n\nERRORS occured httpd was not restarted! Go check for yourself !'
+    if not error:
+        subprocess.check_output([rcctl_cmd_template, RCCTL_RESTART, 'httpd'],
+                                stderr=subprocess.STDOUT,
+                                shell=False)
+    _sendmail('root','root','acme certificate renew',message)
+
