@@ -19,4 +19,5 @@ Content
        * spam - script to blacklist spammer ips
        * check_spamd - a helper to get notification if spamd is running. For some reason on 6.1 
                        the process just dies randomly after a few weeks of running
+       * acme_renew - script to renew let's encrypt certificates and on success restart httpd
 
