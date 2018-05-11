@@ -1,0 +1,58 @@
+#!/usr/local/bin/python
+# coding: utf-8
+# Copyright (C) 2018 Markus, Rosjat
+#
+# again a little helper that is suppose to run on
+# OpenBSD with a running OpenSMTPD. It helps you 
+# monitor mail traffic for a given recipient. 
+#
+# Usecase: local php script that connects to lo0
+#          to send a mail to a relay. 
+ 
+import os
+import sys
+import subprocess
+import smtplib
+import datetime
+from email.mime.text import MIMEText
+
+
+MAILLOG = '/var/log/maillog'
+MAIL_RCPT = 'from=<your_emailaddress_to monitor@domain.tld>'
+RESULT = 'result=\"Ok\"'
+
+HOUR = int(str(datetime.datetime.now()).split(' ')[1].split(':')[0])
+DAY = int(str(datetime.date.today()).split('-')[2])
+
+def _sendmail(_from, _to,_subject,  _msg):
+    """
+    send a notification to someone who can take care of stuff.
+    It asumes you got a local smtpd configured, up and running!
+    """
+    m = MIMEText(_msg.encode('utf-8'),'plain','utf-8')
+    m['subject'] = _subject
+    m['from'] = _from
+    m['to'] = _to
+
+    s = smtplib.SMTP('localhost')
+    s.sendmail(_from,_to, m.as_string())
+    s.quit()
+
+
+if __name__ == "__main__":
+    with open(MAILLOG,'r') as logfile:
+        log = logfile.readlines()
+        message = ''
+        for line in log:
+            if MAIL_RCPT in line or RESULT in line:
+                LOGHOUR = int(line.split(' ')[2].split(':')[0])
+                if DAY > 9:
+                    LOGHOUR = int(line.split(' ')[2].split(':')[0])
+                    LOGDAY = int(line.split(' ')[1])
+                else:
+                    LOGHOUR = int(line.split(' ')[3].split(':')[0])
+                    LOGDAY = int(line.split(' ')[2])
+                if LOGDAY == DAY and LOGHOUR > (HOUR - 1):
+                    message += line
+        if len(message) > 0:
+            _sendmail('root', 'root', 'maillog for %s' % MAIL_RCPT, message)
