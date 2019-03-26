@@ -56,7 +56,7 @@ def _backup_cert():
 
 def _delete_backup():
     """
-    delete an existing backpu
+    delete an existing backup
     """
     shutil.rmtree(cert_backup_path, ignore_errors=True)
 
