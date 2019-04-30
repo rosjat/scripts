@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\powershell",
+    "\\shell",
+    "\\shell\\OpenBSD"
+  ],
+  "SelectedNode": "\\shell\\OpenBSD\\acme_renew",
+  "PreviewInSolutionExplorer": false
+}

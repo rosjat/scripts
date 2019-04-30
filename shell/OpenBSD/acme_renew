@@ -32,7 +32,10 @@ acme_returncodes = {0: 'ACME_CLIENT_SUCCESS',
                     2: 'ACME_CLIENT_NOCHANGES', }
 
 rcctl_cmd_template = '/usr/sbin/rcctl'
+
 acme_client_cmd_template = '/usr/sbin/acme-client'
+acme_config = '/etc/acme-client.conf'
+
 mail_cmd_template = '/usr/bin/mail'
 
 cert_path = '/etc/ssl/web/'
@@ -42,6 +45,20 @@ cert_backup_path = '/etc/ssl/web/backup/'
 domains = ['mydomain.tld',
            'myotherdomain.tld',
            'mythirddomain.tld', ]
+
+def _parse_domain_from_config(filename):
+    """
+	we know the location of the scme-lient config so we simply extract the active
+	domains. If the config has a diffrent path just adjust acme_config variable.
+	"""
+    domains =[]
+    with open(filename,'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            if not line.startswith('#') and line.startswith('domain'):
+               domain = line.split(' ')[1]
+               domains.append(domain)
+    return domains
 
 def _backup_cert():
     """
@@ -92,8 +109,10 @@ def _acme_renew(domains):
             error.update({domain: acme_returncodes[e.returncode], })
     return success, error
 
-
-if __name__ == "__main__":
+def do_acme_renew(domains):
+    """
+	wrap the whole backup and create process in a seperate function.
+	"""
     if os.path.exists(cert_backup_path):
         _delete_backup()
     _backup_cert()
@@ -113,4 +132,9 @@ if __name__ == "__main__":
                                 stderr=subprocess.STDOUT,
                                 shell=False)
     _sendmail('root','root','acme certificate renew',message)
+
+
+if __name__ == "__main__":
+   domains = _parse_domain_from_config(acme_config)
+   do_acme_renew(domains)
 
