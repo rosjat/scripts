@@ -14,6 +14,7 @@ Content
     * hp_cim.ps1 - script to get informations about HP CIM classes provided by HP WEBM Providers
     * rdp_tool.ps1 - creates a GUI to collect informations for an .rdp file
     * robocopy_wrapper.ps1 - script to wrap the robocopy tool 
+    * notify_after_backup.ps1 - script to be used in a windows job to send email notifications
  * T-SQL
     * RECONNECT_ORPHANED_USERS.sql - reconnect MSSQL Server logins with a given Database
  * Shell
