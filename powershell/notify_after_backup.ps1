@@ -46,7 +46,8 @@ Param
 #we could define the credentials and password here but we might wanna store them in a file for a little more security ...
 $credential_file = "D:\path\to\your\credential\file"
 $smtp_user = "mailaddress@domain.tld"
-#$credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $smtp_user, (Get-Content $credential_file | ConvertTo-SecureString)
+$smtp_port = 25
+$credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $smtp_user, (Get-Content $credential_file | ConvertTo-SecureString)
 $from = "Backup `<$smtp_user`>"
 $to = "mailaddress@domain.tld"
 $smtp = "mailserver.domain.tld"
@@ -69,6 +70,6 @@ if($Success -or $Failure)
 	# Get-Item should work for multiple patterns if we use -Include but somethimes it doesnt work for me ...
 	$body += (Get-ChildItem -Path $backup_log_dir -Filter $backup_file_pattern| Get-Content -Raw)
 
-	Send-MailMessage  -SmtpServer $smtp -Port 25 -Credential $credentials -to $to  -from $from -Subject $subject -Body $body -Encoding ([System.Text.Encoding]::UTF8) | Out-Null
+	Send-MailMessage  -SmtpServer $smtp -Port $smtp_port -Credential $credentials -to $to  -from $from -Subject $subject -Body $body -Encoding ([System.Text.Encoding]::UTF8) | Out-Null
 }
 
