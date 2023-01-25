@@ -27,21 +27,21 @@
 .EXAMPLE
     ./check_or_start_service -Failure
 #>
-[CmdletBinding(DefaultParameterSetName="Success")]
+[CmdletBinding(DefaultParameterSetName = "Success")]
 Param
-    (
-        [Parameter(Mandatory=$false, 
-					ParameterSetName = "Success",
-                	ValueFromPipeline=$true,
-                	ValueFromPipelineByPropertyName=$true)] 
-        [switch]$Success,
+(
+	[Parameter(Mandatory = $false, 
+		ParameterSetName = "Success",
+		ValueFromPipeline = $true,
+		ValueFromPipelineByPropertyName = $true)] 
+	[switch]$Success,
 
-		[Parameter(Mandatory=$false, 
-					ParameterSetName = "Failure",
-					ValueFromPipeline=$true,
-					ValueFromPipelineByPropertyName=$true)] 
-		[switch]$Failure
-    )
+	[Parameter(Mandatory = $false, 
+		ParameterSetName = "Failure",
+		ValueFromPipeline = $true,
+		ValueFromPipelineByPropertyName = $true)] 
+	[switch]$Failure
+)
 
 #we could define the credentials and password here but we might wanna store them in a file for a little more security ...
 $credential_file = "D:\path\to\your\credential\file"
@@ -55,8 +55,7 @@ $subject = "Backup - $(Get-Date  -Format dd.MM.yyyy)"
 
 $backup_log_dir = "C:\Windows\Logs\WindowsServerBackup\"
 
-if ($Success)
-{
+if ($Success) {
 	$body = "Backup ran successfully`n`n" 
 	$backup_file_pattern = "Backup-$((Get-Date).ToString("dd-MM-yyyy"))_"
 }
@@ -65,10 +64,9 @@ if ($Failure) {
 	$backup_file_pattern = "Backup_Error-$((Get-Date).ToString("dd-MM-yyyy"))_"
 }
 
-if($Success -or $Failure)
-{
+if ($Success -or $Failure) {
 	# Get-Item should work for multiple patterns if we use -Include but somethimes it doesnt work for me ...
-	$body += (Get-ChildItem -Path $backup_log_dir -Filter $backup_file_pattern| Get-Content -Raw)
+	$body += (Get-ChildItem -Path $backup_log_dir -Filter $backup_file_pattern | Get-Content -Raw)
 
 	Send-MailMessage  -SmtpServer $smtp -Port $smtp_port -Credential $credentials -to $to  -from $from -Subject $subject -Body $body -Encoding ([System.Text.Encoding]::UTF8) | Out-Null
 }
