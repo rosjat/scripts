@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+import Adafruit_DHT 
+import smtplib
+import syslog
+
+sender = 'Your Emailaddress<mail@domain.tld>'
+receivers = ['mail1@domain.tld', 'mail2@domain.tld', 'mail3@domain.tld']
+subject = "Temperature at location X"
+critical_max_temp = 28.0
+critical_min_temp = 15.0
+
+def send_mail(sender, receiver, subject, message):
+    '''
+    Send a mail with the given args,
+
+    This assumes we have a mta running locally so if you 
+    dont adjust your settings!
+    '''
+    header  = f"From: {sender}\r\nTo: {receiver}\r\nSubject: {subject}\r\n\r\n"
+    body  = f"{header}{message}"
+    smtpObj = smtplib.SMTP('localhost')
+    smtpObj.sendmail(sender, receiver, body)
+
+def get_sensor_data(sensor, pin, min_temp, max_temp):
+    '''
+    send a message by mail and log it to syslog.
+    '''
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+    msg = f"\r\ntemperature: {temperature} humidity: {humidity}"
+    syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_CRON)
+    syslog.syslog(syslog.LOG_INFO, msg)
+    if temperature is not None and (float(temperature) > max_temp or float(temperature) < min_temp):
+            syslog.syslog(syslog.LOG_CRIT, msg)
+            return msg
+    return f""
+
+
+if __name__ == "__main__":
+    msg = get_sensor_data(Adafruit_DHT.DHT11, 4, critical_min_temp, critical_max_temp)
+    if msg:
+        for receiver in receivers:
+            send_mail(sender, receiver, subject, msg)
