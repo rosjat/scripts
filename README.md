@@ -15,6 +15,7 @@ Content
     * rdp_tool.ps1 - creates a GUI to collect informations for an .rdp file
     * robocopy_wrapper.ps1 - script to wrap the robocopy tool 
     * notify_after_backup.ps1 - script to be used in a windows job to send email notifications
+    * timeserver.ps1 - script to add a new timeserver in the windows registry
  * T-SQL
     * RECONNECT_ORPHANED_USERS.sql - reconnect MSSQL Server logins with a given Database
  * Shell
