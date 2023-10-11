@@ -16,6 +16,7 @@ Content
     * robocopy_wrapper.ps1 - script to wrap the robocopy tool 
     * notify_after_backup.ps1 - script to be used in a windows job to send email notifications
     * timeserver.ps1 - script to add a new timeserver in the windows registry
+    * RandomStuffModule - A try to make some of the powershell script stuff more useable by putting it into Cmdlets and a Module. Check out [README](powershell/RandomStuffModule/README.md) in the module folder.
  * T-SQL
     * RECONNECT_ORPHANED_USERS.sql - reconnect MSSQL Server logins with a given Database
  * Shell

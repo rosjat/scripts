@@ -26,6 +26,9 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Bb]uild/
+[Pp]ublish/
+
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -338,3 +341,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+#stuff I simply dont want to add to the repo ...
+rdp_tool/
