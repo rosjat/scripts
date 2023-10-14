@@ -1,13 +1,15 @@
+using System;
 using System.Management.Automation;
 
 
 namespace RandomStuffModule.Cmdlet.TimeServer;
 
-[Cmdlet(VerbsCommon.Get, "TimeServer")]
+[Cmdlet(VerbsCommon.Remove, "TimeServer")]
 [OutputType(typeof(RegeditEntry))]
-public class GetTimeServerCommand : PSCmdlet
+public class RemoveTimeServerCommand : PSCmdlet
 {
     [Parameter(
+        Mandatory = true,
         Position = 0,
         ValueFromPipeline = true,
         ValueFromPipelineByPropertyName = true)]
@@ -19,19 +21,17 @@ public class GetTimeServerCommand : PSCmdlet
     }
     protected override void ProcessRecord()
     {
-        WriteVerbose("Process start ... ");
         try
         {
-            if(string.IsNullOrEmpty(ComputerName))
-                TimeServer.GetEntries().ForEach(e =>  WriteObject(e));
-            else
-                WriteObject(TimeServer.Get(ComputerName));             
+            TimeServer.Remove(ComputerName);
+            TimeServer.GetEntries().ForEach(e => WriteObject(e));
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             WriteObject(new ErrorRecord(ex, "EytryNotFound", ErrorCategory.InvalidData, ComputerName));
+    
         }
-        WriteVerbose("Process end ... ");
+
     }
     protected override void EndProcessing()
     {

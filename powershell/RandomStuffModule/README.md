@@ -9,9 +9,12 @@ The build stuff is more or less dotnet cli and I will add it as soon as possible
 Content
 --------
 
+* TimeServer.cs - a static class that does the heavy lifting with the windows registry
+* RegeditEnty.cs - a class that acts as an output object, this might get renamed in the future ...
 * NewTimeServerCommand.cs - Cmdlet class that holds the functionality of timeserver.ps1 
 * GetTimeServerCommand.cs - Cmdlet class that holds the functionality to retrive a specific regitry entry for a time server or all entries
-
+* SetTimeServerCommand.cs - Cmdlet class that holds the functionality to Set a new value for an existing entry
+* RemoveTimeServerCommand.cs - Cmdlet class that holds the functionality to remove an exisiting entry
 
 Build
 ---------
@@ -28,3 +31,13 @@ Commandlets
 
 * New-TimeServer
 * Get-TimeServer
+* Set-TimeServer
+* Remove-TimeServer
+
+ToDo
+--------
+
+* Add testing
+* Try to figure out if this all works with pipelines
+* Add Documentation that gets displayed with Get-Help 
+* Figure out if the project structure is best practice for binary powershell modules in c#
