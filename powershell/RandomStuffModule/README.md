@@ -15,6 +15,7 @@ Content
 * GetTimeServerCommand.cs - Cmdlet class that holds the functionality to retrive a specific regitry entry for a time server or all entries
 * SetTimeServerCommand.cs - Cmdlet class that holds the functionality to Set a new value for an existing entry
 * RemoveTimeServerCommand.cs - Cmdlet class that holds the functionality to remove an exisiting entry
+* ExportPuttySettingCommand.cs - Cmdlet class that holds the functionality to export registry entries for the putty tool
 
 Build
 ---------
@@ -33,6 +34,7 @@ Commandlets
 * Get-TimeServer
 * Set-TimeServer
 * Remove-TimeServer
+* Export-PuttySetting
 
 ToDo
 --------
