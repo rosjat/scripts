@@ -32,7 +32,8 @@
 		'New-TimeServer', 
 		'Get-TimeServer',
 		'Set-TimeServer',
-		'Remove-TimeServer'
+		'Remove-TimeServer',
+		'Export-PuttySetting'
 	)
 
 }
