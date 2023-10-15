@@ -16,6 +16,7 @@ Content
 * SetTimeServerCommand.cs - Cmdlet class that holds the functionality to Set a new value for an existing entry
 * RemoveTimeServerCommand.cs - Cmdlet class that holds the functionality to remove an exisiting entry
 * ExportPuttySettingCommand.cs - Cmdlet class that holds the functionality to export registry entries for the putty tool
+* RandomSuff.psm1 - a powershell module file to hold cmdlets that we dont need to reinvent in c#
 
 Build
 ---------
@@ -35,6 +36,8 @@ Commandlets
 * Set-TimeServer
 * Remove-TimeServer
 * Export-PuttySetting
+* Get-WindowsBackupLog
+* Get-SystemEventLog
 
 ToDo
 --------

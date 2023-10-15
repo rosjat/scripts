@@ -9,7 +9,8 @@
 @{
 
 	# Script module or binary module file associated with this manifest.
-	RootModule        = '.\RandomStuffModule.Cmdlet.dll'
+	RootModule        = '.\RandomStuff.psm1'
+	NestedModules     = @('.\bin\RandomStuffModule.Cmdlet.dll')
 
 	# Version number of this module.
 	ModuleVersion     = '0.2.0'
@@ -33,7 +34,8 @@
 		'Get-TimeServer',
 		'Set-TimeServer',
 		'Remove-TimeServer',
-		'Export-PuttySetting'
+		'Export-PuttySetting',
+		'Get-SystemEventLog'
 	)
 
 }
