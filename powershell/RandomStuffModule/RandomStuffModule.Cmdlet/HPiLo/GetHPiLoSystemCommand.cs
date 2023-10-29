@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using System.Security;
+
 
 namespace RandomStuffModule.Cmdlet.HPiLo;
 
@@ -21,7 +21,7 @@ public class GetHPiLoSystemCommand : PSCmdlet
 
     [Parameter(
     Mandatory = true,
-    Position = 0,
+    Position = 1,
     ValueFromPipeline = true,
     ValueFromPipelineByPropertyName = true)]
     public string Credentials { get; set; }
@@ -33,7 +33,7 @@ public class GetHPiLoSystemCommand : PSCmdlet
     {
         WriteVerbose("Begin!");
         _urlBase = $"https://{ComputerName}/redfish/v1/Systems/1/";
-        _credentials = Host.UI.PromptForCredential("Powershell credential request", "Enter your cedentials.", Credentials, ComputerName);
+        _credentials = Host.UI.PromptForCredential("Powershell credential request", "Enter your credentials.", Credentials, ComputerName);
         _passwd = IloHelper.SecureStringToString(_credentials.Password);
     }
     protected override void ProcessRecord()
