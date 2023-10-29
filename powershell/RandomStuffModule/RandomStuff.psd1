@@ -35,7 +35,8 @@
 		'Set-TimeServer',
 		'Remove-TimeServer',
 		'Export-PuttySetting',
-		'Get-SystemEventLog'
+		'Get-SystemEventLog',
+		'Get-HPiLoSystem'
 	)
 
 }

@@ -17,6 +17,8 @@ Content
 * RemoveTimeServerCommand.cs - Cmdlet class that holds the functionality to remove an exisiting entry
 * ExportPuttySettingCommand.cs - Cmdlet class that holds the functionality to export registry entries for the putty tool
 * RandomSuff.psm1 - a powershell module file to hold cmdlets that we dont need to reinvent in c#
+* HPiLo - EXPERIMENTAL !!! HP REST API for ther integrated Lights Out Managment 
+    * GetHPiLoSystemCommand - Cmdlet class that holds functionality to retrive Informations about the System that the iLo is running on.
 
 Build
 ---------
@@ -38,6 +40,7 @@ Commandlets
 * Export-PuttySetting
 * Get-WindowsBackupLog
 * Get-SystemEventLog
+* Get-HPiLoSystem 
 
 ToDo
 --------
@@ -46,3 +49,4 @@ ToDo
 * Try to figure out if this all works with pipelines
 * Add Documentation that gets displayed with Get-Help 
 * Figure out if the project structure is best practice for binary powershell modules in c#
+* for the HP iLO ... make it more useable for sure ...
