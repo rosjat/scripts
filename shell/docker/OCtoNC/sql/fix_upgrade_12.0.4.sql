@@ -1,0 +1,16 @@
+alter table oc_filecache alter fileid TYPE int;
+alter table oc_properties alter id TYPE int;
+alter table oc_activity alter activity_id TYPE int;
+alter table oc_activity_mq alter mail_id TYPE int;
+alter table oc_share_external alter id TYPE int;
+alter table oc_addressbooks alter id TYPE bigint;
+alter table oc_cards alter id TYPE bigint;
+alter table oc_addressbookchanges alter id TYPE bigint;
+alter table oc_calendarobjects alter id TYPE bigint;
+alter table oc_calendars alter id TYPE bigint;
+alter table oc_calendarchanges alter id TYPE bigint;
+alter table oc_calendarsubscriptions alter id TYPE bigint;
+alter table oc_schedulingobjects alter id TYPE bigint;
+alter table oc_cards_properties alter id TYPE bigint;
+alter table oc_dav_shares alter id TYPE bigint;
+alter table oc_files_trash alter auto_id TYPE int;

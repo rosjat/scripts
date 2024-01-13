@@ -1,0 +1,10 @@
+DROP TABLE oc_federated_reshares;
+DROP TABLE oc_share_external;
+DROP TABLE oc_trusted_servers;
+DROP TABLE oc_oauth2_clients;
+DROP TABLE oc_oauth2_access_tokens;
+DROP TABLE oc_files_trash;
+DROP TABLE oc_flow_checks;
+DROP TABLE oc_flow_operations;
+DROP TABLE oc_notifications;
+DROP TABLE oc_notifications_pushtokens;

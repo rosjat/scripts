@@ -31,3 +31,5 @@ Content
                         know if someone is exploiting your system ...
    * sensor - small script that can be run as a cron job to periodically check the sensors values. It assumes some stuff but i guess 
               it's not hard to addapt.
+   * docker - some stuff for docker
+     * OCtoMC - some stuff to make a Owncloud Miggration to Nextcloud a little easier. I had to migrate from OC 10.0.3.3 to NC 28. Check out [README](shell/docker/OCtoNC/README.md).
