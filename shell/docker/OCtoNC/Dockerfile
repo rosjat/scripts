@@ -24,22 +24,25 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*;
 
-COPY ./sh/download.sh ./sh/download.sh
+COPY ./sh/utils.sh ./sh/utils.sh
 
-RUN sh $PWD/sh/download.sh $NC_DL_VERSIONS
+RUN bash ./sh/utils.sh nc_download $NC_DL_VERSIONS $NC_DOWNLOAD
 
 COPY ./sh ./sh
 COPY ./conf ./conf
 COPY ./sql ./sql
 
 ### Base for OC 10.0.3 to NC 12.0.4 up to 13
-FROM prepstage as base16
+FROM ubuntu:16.04 as base16
 
 # some vars we might need later on ...
 ENV NC_DOWNLOAD="/download"
 ENV NC_DB_OWNER="owncloud_dbo"
 ENV NC_DB="owncloud"
 ENV NC_DB_OWNER_PW="very_secret_password"
+ENV NC_DB_SERVER="postgresql"
+ENV NC_DB_SERVER_VERSION="9.5"
+ENV NC_PHP_VERSION="7.0"
 ENV NC_VERSION="12.0.4"	
 ENV NC_PATH="/var/www/nextcloud"
 ENV NC_DB_PATH="/owncloud/sql"
@@ -53,23 +56,27 @@ ENV NC_REDIS_CONF=""
 EXPOSE 5432
 WORKDIR /owncloud
 
-COPY ./sh/base.sh ./sh/base.sh
+COPY ./sh/base_install.sh ./sh/base_install.sh
 
-RUN sh $PWD/sh/base.sh "9.5" "7.0"
+RUN sh $PWD/sh/base_install.sh $NC_DB_SERVER $NC_DB_SERVER_VERSION $NC_PHP_VERSION
 
 RUN mkdir -p /download
-COPY --from=prepstage /download/ /download
+COPY --from=migration:prepstage /download/ /download
 COPY --from=migration:prepstage /owncloud/ .
 
-ENTRYPOINT sh $PWD/sh/migrate.sh
+ENTRYPOINT /bin/bash $PWD/sh/nc_migrate.sh
 
 ### Base for NC  13 to 19
 FROM ubuntu:18.04 as base18
 
 # some vars we might need later on ...
+ENV NC_DOWNLOAD="/download"
 ENV NC_DB_OWNER="owncloud_dbo"
 ENV NC_DB="owncloud"
-ENV NC_DB_OWNER_PW="very_secret_passwor"
+ENV NC_DB_OWNER_PW="very_secret_password"
+ENV NC_DB_SERVER="postgresql"
+ENV NC_DB_SERVER_VERSION="10"
+ENV NC_PHP_VERSION="7.2"
 ENV NC_VERSION="14.0.0"
 ENV NC_PATH="/var/www/nextcloud"
 ENV NC_CREATE_DB=0
@@ -85,15 +92,15 @@ ENV NC_DB_OUTPUT_PATH="/owncloud/result"
 EXPOSE 5432
 WORKDIR /owncloud
 
-COPY ./sh/base.sh ./sh/base.sh
+COPY ./sh/base_install.sh ./sh/base_install.sh
 
-RUN sh $PWD/sh/base.sh "10" "7.2"
+RUN sh $PWD/sh/base_install.sh $NC_DB_SERVER $NC_DB_SERVER_VERSION $NC_PHP_VERSION
 
 RUN mkdir -p /download
-COPY --from=prepstage /download/ /download
+COPY --from=migration:prepstage /download/ /download
 COPY --from=migration:prepstage /owncloud/ .
 
-ENTRYPOINT sh $PWD/sh/migrate.sh
+ENTRYPOINT /bin/bash $PWD/sh/nc_migrate.sh
 
 ### Base for NC  20 to 24
 FROM ubuntu:20.04 AS base20
@@ -101,7 +108,10 @@ FROM ubuntu:20.04 AS base20
 # some vars we might need later on ...
 ENV NC_DB_OWNER="owncloud_dbo"
 ENV NC_DB="owncloud"
-ENV NC_DB_OWNER_PW="very_secret_passwor"
+ENV NC_DB_OWNER_PW="very_secret_password"
+ENV NC_DB_SERVER="postgresql"
+ENV NC_DB_SERVER_VERSION="12"
+ENV NC_PHP_VERSION="7.4"
 ENV NC_VERSION="20.0.14"
 ENV NC_PATH="/var/www/nextcloud"
 ENV NC_CREATE_DB=0
@@ -116,15 +126,15 @@ ENV NC_DB_OUTPUT_PATH="/owncloud/result"
 EXPOSE 5432
 WORKDIR /owncloud
 
-COPY ./sh/base.sh ./sh/base.sh
+COPY ./sh/base_install.sh ./sh/base_install.sh
 
-RUN sh $PWD/sh/base.sh "12" "7.4"
+RUN sh $PWD/sh/base_install.sh $NC_DB_SERVER $NC_DB_SERVER_VERSION $NC_PHP_VERSION
 
 RUN mkdir -p /download
-COPY --from=prepstage /download/ /download
+COPY --from=migration:prepstage /download/ /download
 COPY --from=migration:prepstage /owncloud/  .
 
-ENTRYPOINT sh $PWD/sh/migrate.sh
+ENTRYPOINT /bin/bash $PWD/sh/nc_migrate.sh
 
 ### Base for NC  25 to 28
 FROM ubuntu:22.04 AS base22
@@ -132,7 +142,10 @@ FROM ubuntu:22.04 AS base22
 # some vars we might need later on ...
 ENV NC_DB_OWNER="owncloud_dbo"
 ENV NC_DB="owncloud"
-ENV NC_DB_OWNER_PW="very_secret_passwor"
+ENV NC_DB_OWNER_PW="very_secret_password"
+ENV NC_DB_SERVER="postgresql"
+ENV NC_DB_SERVER_VERSION="14"
+ENV NC_PHP_VERSION="8.1"
 ENV NC_VERSION="25.0.13"
 ENV NC_PATH="/var/www/nextcloud"
 ENV NC_CREATE_DB=0
@@ -147,12 +160,12 @@ ENV NC_DB_OUTPUT_PATH="/owncloud/result"
 EXPOSE 5432
 WORKDIR /owncloud
 
-COPY ./sh/base.sh ./sh/base.sh
+COPY ./sh/base_install.sh ./sh/base_install.sh
 
-RUN sh $PWD/sh/base.sh "14" "8.1"
+RUN sh $PWD/sh/base_install.sh $NC_DB_SERVER $NC_DB_SERVER_VERSION $NC_PHP_VERSION
 
 RUN mkdir -p /download
-COPY --from=prepstage /download/ /download
+COPY --from=migration:prepstage /download/ /download
 COPY --from=migration:prepstage /owncloud/ .
 
-ENTRYPOINT sh $PWD/sh/migrate.sh
+ENTRYPOINT /bin/bash $PWD/sh/nc_migrate.sh
