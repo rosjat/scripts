@@ -34,7 +34,17 @@ do_migration() {
 	fi;
 	echo "starting services ..."
 	service redis-server start;
-	service postgresql start;
+	if [ $NC_DB_SERVER = "postgresql" ];
+		then
+			service postgresql start;
+	else
+		if [ $NC_IMAGE_BASE -ne 22 ];
+			then
+				service mysql start;
+		else
+			service mariadb start;
+		fi;
+	fi;
 	echo "done."
 	if [ $NC_CREATE_DB -eq 1 ];
 		then
@@ -54,7 +64,17 @@ do_migration() {
 	cp $nc_config_path/config.php $php_path/config.php; 
 	echo "stopping services ..."
 	service redis-server stop;
-	service postgresql stop;
+	if [ $NC_DB_SERVER = "postgresql" ];
+		then
+			service postgresql stop;
+	else
+		if [ $NC_IMAGE_BASE -ne 22 ];
+			then
+				service mysql stop;
+		else
+			service mariadb stop;
+		fi;
+	fi;
 	echo "done"
 }
 

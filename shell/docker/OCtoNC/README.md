@@ -49,4 +49,4 @@ If you wanna run stages just look at the targets in the make file, you could eas
 ToDo
 --------
 
-* add more code for the mariaDB migration
+* get the build stage to work with build args to support mariadb and postgresql without changing the Dokcerfile

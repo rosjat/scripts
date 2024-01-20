@@ -48,14 +48,22 @@ nc_init_maria_db() {
 	local db=$1
 	local db_owner=$2
 	local db_owner_pw=$3
-	systemctl enable mysql
-	service mysql start 
-	mysql <<-EOSQL
-			CREATE USER $db_owner IDENTIFIED BY '$db_owner_pw';
-			CREATE DATABASE $db;
-			GRANT ALL PRIVILEGES ON $db.* TO '$db_owner'@'%';
-	EOSQL
-	service mysql stop;
+	if [ $NC_IMAGE_BASE -ne 22 ];
+		then
+			su -c "mysql -S /var/run/mysqld/mysqld.sock <<-EOSQL
+				CREATE USER $db_owner IDENTIFIED BY '$db_owner_pw';
+				CREATE DATABASE $db;
+				GRANT ALL PRIVILEGES ON $db.* TO '$db_owner'@'%';
+			EOSQL";
+			su -c "mysql -S /var/run/mysqld/mysqld.sock $db < $PWD/owncloud.sql";
+	else
+		su -c "mariadb  -S /var/run/mysqld/mysqld.sock  <<-EOSQL
+				CREATE USER $db_owner IDENTIFIED BY '$db_owner_pw';
+				CREATE DATABASE $db;
+				GRANT ALL PRIVILEGES ON $db.* TO '$db_owner'@'%';
+		EOSQL";
+		su -c "mariadb -S /var/run/mysqld/mysqld.sock $db < $PWD/owncloud.sql";
+	fi;
 }
 
 nc_init_db() {
@@ -97,7 +105,12 @@ nc_backup() {
 	local db_owner_pw=$3
 	local output_path=$4
 	local db_backup_file=$5
-	PGPASSWORD=$db_owner_pw pg_dump  --quote-all-identifiers -U $db_owner -h localhost $db > /tmp/$db_backup_file;
+	if [ $NC_DB_SERVER = "postgresql" ];
+		then
+			PGPASSWORD=$db_owner_pw pg_dump  --quote-all-identifiers -U $db_owner -h localhost $db > /tmp/$db_backup_file;
+	else
+		mysqldump --user=$db_owner  --password=$db_owner_pw --lock-tables --socket /var/run/mysqld/mysqld.sock  --databases $db > /tmp/$db_backup_file;
+	fi;
 	mv /tmp/$db_backup_file $output_path/owncloud.sql; 
 }
 
