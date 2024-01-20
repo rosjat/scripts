@@ -33,16 +33,31 @@ Well cd in the folder and run the Makefile with some args ...
 
 * build your images 
 
+  * without passing a version, this will default to whatever you specify in the Makefile for the version variable
 	```
-	$ make build-images
+	$ make build-images 
 	```
+  * with passing a version
+	```
+	$ make build-images version=0.3
+	```
+* build a single image, this will build an image with the given base for the taget in the dockerfile and a image version
+	```
+	$ make build base=16 version=0.2
+	```
+Run Migrations
+--------------
 
 * run the full migration 
 
 	```
 	$ make
 	```
+* run only one migration for a specific version. This will run a migration with the base image  migration:16v0.1 for nexctcloud 13.0.0
 
+  ```
+  $ make migrate base=16 version=0.1 nc_version=13.0.0 
+  ```
 If you wanna run stages just look at the targets in the make file, you could easily write your own targest for your needs!
 
 
