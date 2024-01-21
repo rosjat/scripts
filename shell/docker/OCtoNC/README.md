@@ -25,6 +25,7 @@ Content
   * owncloud.sql -> your init database
 * Dockerfile -> blueprint for the Docker images and also open for your improvements!
 * Makefile -> well we might wanna slimline some things so we use a Makefile with some targets
+* make.ps1 -> the powershell version of the Makefile, not to fancy but it works
 
 Build
 ---------
@@ -60,8 +61,12 @@ Run Migrations
   ```
 If you wanna run stages just look at the targets in the make file, you could easily write your own targest for your needs!
 
+Troubleshooting
+----------------
+
+if you run on Windows you might get errors that the shell scripts can't be run, then check that your `.sh` files are saved with `LF` and not `CRLF` line endings! you might want to save them as `UTF-8` too.
 
 ToDo
 --------
 
-* get the build stage to work with build args to support mariadb and postgresql without changing the Dokcerfile
+* get the build stage to work with build args to support mariadb and postgresql without changing the Dockerfile
