@@ -1,0 +1,50 @@
+#! /usr/bin/env python3
+
+import requests
+import re
+import subprocess
+import os
+
+fritzbox_ip = "your_fritzbox_ip"
+
+dns_server = "your_dns_server-ip"
+dyn_dns_zone = "your.dyn.dns.zone."
+dyn_dns_fqdn = "your.dyn.domain.tld"
+
+hashfunc = "hmac-sha512"
+tsig_secret = "your_tsig_key"
+tsig_key = f"{hashfunc}:{dyn_dns_fqdn}:{tsig_secret}"
+
+url = f"http://{fritzbox_ip}:49000/igdupnp/control/WANIPConn1"
+headers = {
+"Content-Type" : "text/xml",
+"SoapAction": "urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress",
+}
+
+body = """
+<?xml version='1.0' encoding='utf-8'?>
+<s:Envelope s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'>
+  <s:Body>
+    <u:GetExternalIPAddress xmlns:u='urn:schemas-upnp-org:service:WANIPConnection:1' />
+  </s:Body>
+</s:Envelope>"
+"""
+
+r = requests.post(url, headers=headers, data=body)
+external_ip = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", str(r.content))[0]
+
+content = f"""
+server {dns_server}
+zone {dyn_dns_zone}
+delete {dyn_dns_fqdn} IN  A
+add {dyn_dns_fqdn}   3600  IN  A  {external_ip}
+send
+"""
+
+tmp_file = "path/to/a/tmp/file"
+
+with open(tmp_file,"w") as f:
+    f.write(content)
+
+subprocess.run(["nsupdate","-y", tsig_key, tmp_file], capture_output=False)
+os.remove(tmp_file)
